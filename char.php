@@ -70,14 +70,15 @@ function char_main(&$sqlr, &$sqlc)
 
     if ($user_lvl >= $owner_gmlvl && (($side_v === $side_p) || !$side_v))
     {
-      $result = $sqlc->query('SELECT account, data, name, race, class, gender, level, zone, map, online, totaltime, 
+      $result = $sqlc->query('SELECT account, name, race, class, gender, level, zone, map, online, totaltime, 
 									arenaPoints, totalHonorPoints, totalKills, 
 									health, 
 									power1, power2, power3, power4, power5, power6, power7
 								FROM characters 
 								WHERE guid = '.$id.'');
       $char = $sqlc->fetch_assoc($result);
-      $char_data = explode(' ',$char['data']);
+      $char_data = explode(' ', $sqlc->result($sqlc->query('SELECT maxhealth, maxpower1, maxpower2, maxpower3, maxpower4, maxpower5, maxpower6, maxpower7, strength, agility, stamina, intellect, spirit, armor, resHoly, resFire, resNature, resFrost, resShadow, resArcane, blockPct, dodgePct, ParryPct, critPct, rangedCritPct, spellCritPct, attackPower, rangedAttackPower, spellPower FROM character_stats WHERE guid = '.$id.''), 0));
+//      $char_data = explode(' ',$char['data']);
 
       $online = ($char['online']) ? $lang_char['online'] : $lang_char['offline'];
 
@@ -94,44 +95,19 @@ function char_main(&$sqlr, &$sqlc)
         $guild_rank = $lang_global['none'];
       }
 
-      $block       = unpack('f', pack('L', $char_data[CHAR_DATA_OFFSET_BLOCK]));
-      $block       = round($block[1],2);
-      $dodge       = unpack('f', pack('L', $char_data[CHAR_DATA_OFFSET_DODGE]));
-      $dodge       = round($dodge[1],2);
-      $parry       = unpack('f', pack('L', $char_data[CHAR_DATA_OFFSET_PARRY]));
-      $parry       = round($parry[1],2);
-      $crit        = unpack('f', pack('L', $char_data[CHAR_DATA_OFFSET_MELEE_CRIT]));
-      $crit        = round($crit[1],2);
-      $ranged_crit = unpack('f', pack('L', $char_data[CHAR_DATA_OFFSET_RANGE_CRIT]));
-      $ranged_crit = round($ranged_crit[1],2);
-      $maxdamage   = unpack('f', pack('L', $char_data[CHAR_DATA_OFFSET_MAXDAMAGE]));
-      $maxdamage   = round($maxdamage[1],0);
-      $mindamage   = unpack('f', pack('L', $char_data[CHAR_DATA_OFFSET_MINDAMAGE]));
-      $mindamage   = round($mindamage[1],0);
-      $maxrangeddamage = unpack('f', pack('L', $char_data[CHAR_DATA_OFFSET_MAXRANGEDDAMAGE]));
-      $maxrangeddamage = round($maxrangeddamage[1],0);
-      $minrangeddamage = unpack('f', pack('L', $char_data[CHAR_DATA_OFFSET_MINRANGEDDAMAGE]));
-      $minrangeddamage = round($minrangeddamage[1],0);
-
-      $spell_crit = 100;
-      for ($i=0; $i<6; ++$i)
-      {
-        $temp = unpack('f', pack('L', $char_data[CHAR_DATA_OFFSET_SPELL_CRIT+1+$i]));
-        if ($temp[1] < $spell_crit)
-        $spell_crit = $temp[1];
-      }
-      $spell_crit = round($spell_crit,2);
-
-      $spell_damage = 9999;
-      for ($i=0; $i<6; ++$i)
-      {
-        if ($char_data[CHAR_DATA_OFFSET_SPELL_DAMAGE+1+$i] < $spell_damage)
-        $spell_damage = $char_data[CHAR_DATA_OFFSET_SPELL_DAMAGE+1+$i];
-      }
-
-      $rage       = round($char['power2'] / 10);
-      $expertise  = ''.$char_data[CHAR_DATA_OFFSET_EXPERTISE].' / '.$char_data[CHAR_DATA_OFFSET_OFFHAND_EXPERTISE].'';
-
+      $block       = $char_data[20];
+      $dodge       = $char_data[21];
+      $parry       = $char_data[22];
+      $crit        = $char_data[23];
+      $ranged_crit = $char_data[24];
+      $maxdamage   = $char_data[26];
+      $mindamage   = $char_data[26];
+      $maxrangeddamage = $char_data[27];
+      $minrangeddamage = $char_data[27];
+      $spell_crit = $char_data[25];
+      $spell_damage = $char_data[28];
+      $rage       = round($char_data['power2'] / 10);
+      $expertise  = $char_data[13];
       $EQU_HEAD      = $char_data[CHAR_DATA_OFFSET_EQU_HEAD];
       $EQU_NECK      = $char_data[CHAR_DATA_OFFSET_EQU_NECK];
       $EQU_SHOULDER  = $char_data[CHAR_DATA_OFFSET_EQU_SHOULDER];

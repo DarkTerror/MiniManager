@@ -11,7 +11,7 @@ $sql->connect($characters_db[$realm_id]['addr'], $characters_db[$realm_id]['user
 
 $start = (isset($_GET['start'])) ? $sql->quote_smart($_GET['start']) : 0;
 $order_by = (isset($_GET['order_by'])) ? $sql->quote_smart($_GET['order_by']) :"honor";
-$query = $sql->query("SELECT guid, name, race, class, CAST( SUBSTRING_INDEX(SUBSTRING_INDEX(`characters`.`data`, ' ', ".(CHAR_DATA_OFFSET_HONOR_POINTS+1)."), ' ', -1) AS UNSIGNED) AS honor , CAST( SUBSTRING_INDEX(SUBSTRING_INDEX(`data`, ' ', ".(CHAR_DATA_OFFSET_HONOR_KILL+1)."), ' ', -1) AS UNSIGNED) AS kills, level, CAST( SUBSTRING_INDEX(SUBSTRING_INDEX(`data`, ' ', ".(CHAR_DATA_OFFSET_ARENA_POINTS+1)."), ' ', -1) AS UNSIGNED) AS arena, CAST( SUBSTRING_INDEX(SUBSTRING_INDEX(`characters`.`data`, ' ', ".(CHAR_DATA_OFFSET_GUILD_ID+1)."), ' ', -1) AS UNSIGNED) as GNAME, gender FROM `characters` where race in (1,3,4,7,11) ORDER BY $order_by DESC LIMIT 25;");
+$query = $sql->query("SELECT characters.guid, characters.name, race, class, totalHonorPoints AS honor , totalKills AS kills, level, arenaPoints AS arena, guildid as GNAME, gender FROM `characters`,guild_member where race in (1,3,4,7,11) AND guild_member.guid = characters.guid ORDER BY $order_by DESC LIMIT 25;");
 $this_page = $sql->num_rows($query);
 $output .= "<script type=\"text/javascript\">
 answerbox.btn_ok='{$lang_global['yes_low']}';
@@ -52,7 +52,7 @@ answerbox.btn_cancel='{$lang_global['no']}';
 				</tr>";
 			}
 $output .= "</table><br /></fieldset>";
-$query = $sql->query("SELECT guid,name,race,class, CAST( SUBSTRING_INDEX(SUBSTRING_INDEX(`characters`.`data`, ' ', ".(CHAR_DATA_OFFSET_HONOR_POINTS+1)."), ' ', -1) AS UNSIGNED) AS honor , CAST( SUBSTRING_INDEX(SUBSTRING_INDEX(`data`, ' ', ".(CHAR_DATA_OFFSET_HONOR_KILL+1)."), ' ', -1) AS UNSIGNED) AS kills, level, CAST( SUBSTRING_INDEX(SUBSTRING_INDEX(`data`, ' ', ".(CHAR_DATA_OFFSET_ARENA_POINTS+1)."), ' ', -1) AS UNSIGNED) AS arena, CAST( SUBSTRING_INDEX(SUBSTRING_INDEX(`characters`.`data`, ' ', ".(CHAR_DATA_OFFSET_GUILD_ID+1)."), ' ', -1) AS UNSIGNED) as GNAME, gender FROM `characters` where race not in (1,3,4,7,11) ORDER BY $order_by DESC LIMIT 25;");
+$query = $sql->query("SELECT characters.guid,characters.name,race,class, totalHonorPoints AS honor , totalKills AS kills, level, arenaPoints AS arena, guildid as GNAME, gender FROM `characters`,guild_member where race not in (1,3,4,7,11) AND guild_member.guid = characters.guid ORDER BY $order_by DESC LIMIT 25;");
 $this_page = $sql->num_rows($query);
 $output .= "<script type=\"text/javascript\">
 answerbox.btn_ok='{$lang_global['yes_low']}';

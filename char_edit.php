@@ -40,7 +40,7 @@ if ($sql->num_rows($result))
 	if ($user_lvl >= $owner_gmlvl)
 	{
 		$sql->connect($characters_db[$realm_id]['addr'], $characters_db[$realm_id]['user'], $characters_db[$realm_id]['pass'], $characters_db[$realm_id]['name']);
-		$result = $sql->query("SELECT guid, account, data, name, race, class, position_x, position_y, map, online, totaltime, position_z, zone, level, gender, arenaPoints, totalHonorPoints, todayHonorPoints, yesterdayHonorPoints, totalKills, todaykills, yesterdayKills, health, power1, power2, power3, power4, power5, power6, power7, money, xp FROM `characters` WHERE guid = '$id'");
+		$result = $sql->query("SELECT guid, account, name, race, class, position_x, position_y, map, online, totaltime, position_z, zone, level, gender, arenaPoints, totalHonorPoints, todayHonorPoints, yesterdayHonorPoints, totalKills, todaykills, yesterdayKills, health, power1, power2, power3, power4, power5, power6, power7, money, xp FROM `characters` WHERE guid = '$id'");
 		$char = $sql->fetch_row($result);
 		$char_data = explode(' ',$char[2]);
 		if($char[9]) 

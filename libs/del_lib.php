@@ -160,33 +160,20 @@ function del_guild($guid, $realm)
 	$sqlc->connect($characters_db[$realm]['addr'], $characters_db[$realm]['user'], $characters_db[$realm]['pass'], $characters_db[$realm]['name']);
 
 	//clean data inside characters.data field
-	while ($guild_member = $sqlc->result($sqlc->query('SELECT guid 
-														FROM guild_member 
-														WHERE guildid = '.$guid.''),0))
+	while ($guild_member = $sqlc->result($sqlc->query('SELECT guid FROM guild_member WHERE guildid = '.$guid.' '),0))
 	{
-		$data = $sqlc->result($sqlc->query('SELECT data 
-											FROM characters 
-											WHERE guid = '.$guild_member.''), 0);
+		$data = $sqlc->result($sqlc->query('SELECT data FROM characters WHERE guid = '.$guild_member.' '),0);
 		$data = explode(' ', $data);
 		$data[CHAR_DATA_OFFSET_GUILD_ID] = 0;
 		$data[CHAR_DATA_OFFSET_GUILD_RANK] = 0;
 		$data = implode(' ', $data);
-		$sqlc->query('UPDATE characters 
-						SET data = '.$data.' 
-						WHERE guid = '.$guild_member.'');
+		$sqlc->query('UPDATE characters SET data = '.$data.' WHERE guid = '.$guild_member.' ');
 	}
 
-	$sqlc->query('DELETE 
-					FROM item_instance 
-					WHERE guid IN 
-				(SELECT item_guid 
-					FROM guild_bank_item 
-					WHERE guildid ='.$guid.')');
+	$sqlc->query('DELETE FROM item_instance WHERE guid IN (SELECT item_guid FROM guild_bank_item WHERE guildid ='.$guid.')');
 
 	foreach ($tab_del_guild as $value)
-	$sqlr->query('DELETE 
-					FROM '.$value[0].' 
-					WHERE '.$value[1].' = '.$guid.'');
+	$sqlr->query('DELETE FROM '.$value[0].' WHERE '.$value[1].' = '.$guid.' ');
 
 	if ($sqlc->affected_rows())
 		return true;

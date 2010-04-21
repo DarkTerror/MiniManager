@@ -43,7 +43,7 @@ function char_talent(&$sqlr, &$sqlc)
   else error($lang_global['empty_fields']);
 
   $result = $sqlc->query('SELECT account, name, race, class, level, gender,
-    CAST( SUBSTRING_INDEX(SUBSTRING_INDEX(data, " ", '.(CHAR_DATA_OFFSET_POINTS1+1).'), " ", -1) AS UNSIGNED) AS talent_points
+    specCount AS talent_points
     FROM characters WHERE guid = '.$id.' LIMIT 1');
 
   if ($sqlc->num_rows($result))
@@ -244,7 +244,7 @@ function char_talent(&$sqlr, &$sqlc)
         unset($talent_points);
         unset($talent_points_used);
         unset($talent_points_left);
-        $glyphs = explode(' ', $sqlc->result($sqlc->query('SELECT data FROM characters WHERE guid = '.$id.''), 0));
+        $glyphs = explode(' ', $sqlc->result($sqlc->query('SELECT glyph FROM character_glyphs WHERE guid = '.$id.''), 0));
         for($i=0;$i<6;++$i)
         {
           if ($glyphs[(CHAR_DATA_OFFSET_GLYPHS+($i))])

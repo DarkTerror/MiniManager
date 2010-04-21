@@ -18,13 +18,16 @@ function spell_get_icon($auraid, &$sqlm)
 {
   global $proxy_cfg, $get_icons_from_web, $item_icons;
 
+
+/*
+Commented this part while i find the correct solution.
   $result = $sqlm->query('SELECT field_139 FROM dbc_spell WHERE id = '.$auraid.' LIMIT 1');
 
   if ($result)
     $displayid = $sqlm->result($result, 0);
   else
     $displayid = 0;
-
+*/
   if ($displayid)
   {
     $result = $sqlm->query('SELECT name FROM dbc_spellicon WHERE id = '.$displayid.' LIMIT 1');

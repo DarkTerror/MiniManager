@@ -40,41 +40,40 @@ function top100($realmid, &$sqlr, &$sqlc)
   $all_record = $sqlc->result($result, 0);
   $all_record = (($all_record < 100) ? $all_record : 100);
 
-  $result = $sqlc->query('SELECT guid, name, race, class, gender, level, totaltime, online, money, health,
+  $result = $sqlc->query('SELECT characters.guid, characters.name, race, class, gender, level, totaltime, online, money, health,
 							power1,
 							arenaPoints as arena, totalHonorPoints as honor, totalKills as kills, 
-    CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(data, " ", '.(CHAR_DATA_OFFSET_GUILD_ID+1).'),          " ", -1) AS UNSIGNED) as gname,
-    CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(data, " ", '.(CHAR_DATA_OFFSET_STR+1).'),               " ", -1) AS UNSIGNED) AS str,
-    CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(data, " ", '.(CHAR_DATA_OFFSET_AGI+1).'),               " ", -1) AS UNSIGNED) AS agi,
-    CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(data, " ", '.(CHAR_DATA_OFFSET_STA+1).'),               " ", -1) AS UNSIGNED) AS sta,
-    CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(data, " ", '.(CHAR_DATA_OFFSET_INT+1).'),               " ", -1) AS UNSIGNED) AS intel,
-    CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(data, " ", '.(CHAR_DATA_OFFSET_SPI+1).'),               " ", -1) AS UNSIGNED) AS spi,
-    CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(data, " ", '.(CHAR_DATA_OFFSET_ARMOR+1).'),             " ", -1) AS UNSIGNED) AS armor,
-    CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(data, " ", '.(CHAR_DATA_OFFSET_BLOCK+1).'),             " ", -1) AS UNSIGNED) AS block,
-    CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(data, " ", '.(CHAR_DATA_OFFSET_DODGE+1).'),             " ", -1) AS UNSIGNED) AS dodge,
-    CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(data, " ", '.(CHAR_DATA_OFFSET_PARRY+1).'),             " ", -1) AS UNSIGNED) AS parry,
-   (CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(data, " ", '.(CHAR_DATA_OFFSET_AP+1).'),                " ", -1) AS UNSIGNED)
-  + CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(data, " ", '.(CHAR_DATA_OFFSET_AP_MOD+1).'),            " ", -1) AS UNSIGNED)) AS ap,
-   (CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(data, " ", '.(CHAR_DATA_OFFSET_RANGED_AP+1).'),         " ", -1) AS UNSIGNED)
-  + CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(data, " ", '.(CHAR_DATA_OFFSET_RANGED_AP_MOD+1).'),     " ", -1) AS UNSIGNED)) AS ranged_ap,
-    CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(data, " ", '.(CHAR_DATA_OFFSET_MINDAMAGE+1).'),         " ", -1) AS UNSIGNED) AS min_dmg,
-    CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(data, " ", '.(CHAR_DATA_OFFSET_MAXDAMAGE+1).'),         " ", -1) AS UNSIGNED) AS max_dmg,
-    CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(data, " ", '.(CHAR_DATA_OFFSET_MINRANGEDDAMAGE+1).'),   " ", -1) AS UNSIGNED) AS min_ranged_dmg,
-    CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(data, " ", '.(CHAR_DATA_OFFSET_MAXRANGEDDAMAGE+1).'),   " ", -1) AS UNSIGNED) AS max_ranged_dmg,
-    CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(data, " ", '.(CHAR_DATA_OFFSET_EXPERTISE+1).'),         " ", -1) AS UNSIGNED) AS expertise,
-    CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(data, " ", '.(CHAR_DATA_OFFSET_OFFHAND_EXPERTISE+1).'), " ", -1) AS UNSIGNED) AS off_expertise,
-    CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(data, " ", '.(CHAR_DATA_OFFSET_RES_HOLY+1).'),          " ", -1) AS UNSIGNED) AS holy,
-    CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(data, " ", '.(CHAR_DATA_OFFSET_RES_FIRE+1).'),          " ", -1) AS UNSIGNED) AS fire,
-    CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(data, " ", '.(CHAR_DATA_OFFSET_RES_NATURE+1).'),        " ", -1) AS UNSIGNED) AS nature,
-    CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(data, " ", '.(CHAR_DATA_OFFSET_RES_FROST+1).'),         " ", -1) AS UNSIGNED) AS frost,
-    CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(data, " ", '.(CHAR_DATA_OFFSET_RES_SHADOW+1).'),        " ", -1) AS UNSIGNED) AS shadow,
-    CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(data, " ", '.(CHAR_DATA_OFFSET_RES_ARCANE+1).'),        " ", -1) AS UNSIGNED) AS arcane,
-    CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(data, " ", '.(CHAR_DATA_OFFSET_MELEE_CRIT+1).'),        " ", -1) AS UNSIGNED) AS melee_crit,
-    CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(data, " ", '.(CHAR_DATA_OFFSET_RANGE_CRIT+1).'),        " ", -1) AS UNSIGNED) AS range_crit,
-    CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(data, " ", '.(CHAR_DATA_OFFSET_MELEE_HIT+1).'),         " ", -1) AS UNSIGNED) AS melee_hit,
-    CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(data, " ", '.(CHAR_DATA_OFFSET_RANGE_HIT+1).'),         " ", -1) AS UNSIGNED) AS range_hit,
-    CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(data, " ", '.(CHAR_DATA_OFFSET_SPELL_HIT+1).'),         " ", -1) AS UNSIGNED) AS spell_hit
-    FROM characters ORDER BY '.$order_by.' '.$order_dir.' LIMIT '.$start.', '.$itemperpage.'');
+    guildid as gname,
+    strength AS str,
+    agility AS agi,
+    stamina AS sta,
+    intellect AS intel,
+    spirit AS spi,
+    armor AS armor,
+    blockPct AS block,
+    dodgePct AS dodge,
+    parryPct AS parry,
+    attackPower AS ap,
+    rangedAttackPower AS ranged_ap,
+    power2 AS min_dmg,
+    power3 AS max_dmg,
+    power4 AS min_ranged_dmg,
+    power5 AS max_ranged_dmg,
+    power6 AS expertise,
+    power7 AS off_expertise,
+    resHoly AS holy,
+    resFire AS fire,
+    resNature AS nature,
+    resFrost AS frost,
+    resShadow AS shadow,
+    resArcane AS arcane,
+    critPct AS melee_crit,
+    rangedCritPct AS range_crit,
+    power1 AS melee_hit,
+    power2 AS range_hit,
+    power3 AS spell_hit
+
+FROM characters, character_stats, guild_member WHERE guild_member.guid = characters.guid ORDER BY '.$order_by.' '.$order_dir.' LIMIT '.$start.', '.$itemperpage.'');
 
 
   //==========================top tage navigaion starts here========================

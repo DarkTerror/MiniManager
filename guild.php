@@ -448,7 +448,7 @@ $output .= "
 //#############################################################################
 function del_guild()
 {
-  global $lang_guild, $lang_global, $output, $characters_db, $realm_id,
+  global $lang_guild, $lang_global, $output, $characters_db, $realm_id, $realm_db, 
     $action_permission, $user_lvl, $user_id;
 
   $sqlr = new SQL;
