@@ -112,9 +112,9 @@ function char_mail(&$sqlr, &$sqlc)
 
       //---------------Page Specific Starts Ends here----------------------------
       $query = $sqlc->query('SELECT a.id as id, a.messageType as messagetype, a.sender as sender,
-        a.subject as subject, a.itemTextId as itemtextid, a.has_items as hasitems, a.money as money, a.cod as cod, a.checked as checked,
+        a.subject as subject, a.body as itemtextid, a.has_items as hasitems, a.money as money, a.cod as cod, a.checked as checked,
         b.item_template as itemtemplate
-        FROM mail a INNER JOIN mail_items b ON a.id = b.mail_id where a.receiver = '.$id .' LIMIT '.$start.', '.$itemperpage.'');
+        FROM mail a INNER JOIN mail_items b ON a.id = b.mail_id where a.receiver = '.$id .' GROUP by a.id LIMIT '.$start.', '.$itemperpage.'');
       $total_mail = $sqlc->result($sqlc->query('SELECT count(*) FROM mail WHERE receiver= '.$id .''), 0);
 
 
