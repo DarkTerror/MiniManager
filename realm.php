@@ -25,7 +25,7 @@ function show_realm(&$sqlr)
   $dir = ($dir) ? 0 : 1;
   //==========================$_GET and SECURE end=============================
 
-  $result = $sqlr->query('SELECT realmlist.id AS rid, name, address, port, icon, color, timezone,
+  $result = $sqlr->query('SELECT realmlist.id AS rid, name, address, port, icon, realmflags, timezone,
             (SELECT SUM(numchars) FROM realmcharacters WHERE realmid = rid) as sum
             FROM realmlist ORDER BY '.$order_by.' '.$order_dir.'');
   $total_realms = $sqlr->num_rows($result);
@@ -56,7 +56,7 @@ function show_realm(&$sqlr)
                 <th width="10%"><a href="realm.php?order_by=address&amp;dir='.$dir.'"'.($order_by==='address' ? ' class="'.$order_dir.'"' : '').'>'.$lang_realm['address'].'</a></th>
                 <th width="1%"><a href="realm.php?order_by=port&amp;dir='.$dir.'"'.($order_by==='port' ? ' class="'.$order_dir.'"' : '').'>'.$lang_realm['port'].'</a></th>
                 <th width="1%"><a href="realm.php?order_by=icon&amp;dir='.$dir.'"'.($order_by==='icon' ? ' class="'.$order_dir.'"' : '').'>'.$lang_realm['icon'].'</a></th>
-                <th width="1%"><a href="realm.php?order_by=color&amp;dir='.$dir.'"'.($order_by==='color' ? ' class="'.$order_dir.'"' : '').'>'.$lang_realm['color'].'</a></th>
+                <th width="1%"><a href="realm.php?order_by=realmflags&amp;dir='.$dir.'"'.($order_by==='realmflags' ? ' class="'.$order_dir.'"' : '').'>'.$lang_realm['color'].'</a></th>
                 <th width="7%"><a href="realm.php?order_by=timezone&amp;dir='.$dir.'"'.($order_by==='timezone' ? ' class="'.$order_dir.'"' : '').'>'.$lang_realm['timezone'].'</a></th>
               </tr>';
   unset($dir);
@@ -108,7 +108,7 @@ function show_realm(&$sqlr)
                 <td>'.$realm['address'].'</td>
                 <td>'.$realm['port'].'</td>
                 <td>'.$icon_type[$realm['icon']][1].'</td>
-                <td>'.$realm['color'].'</td>
+                <td>'.$realm['realmflags'].'</td>
                 <td>'.$timezone_type[$realm['timezone']][1].'</td>
               </tr>';
   }
@@ -139,7 +139,7 @@ function edit_realm(&$sqlr)
   if(is_numeric($id)); else redirect('realm.php?error=1');
 
   if ($realm =
-       $sqlr->fetch_assoc($sqlr->query('SELECT realmlist.id AS rid, name, address, port, icon, color, timezone,
+       $sqlr->fetch_assoc($sqlr->query('SELECT realmlist.id AS rid, name, address, port, icon, realmflags, timezone,
          (SELECT SUM(numchars) FROM realmcharacters WHERE realmid = rid) as sum
          FROM realmlist WHERE id ='.$id.''))
      )
@@ -276,7 +276,7 @@ function doedit_realm(&$sqlr)
   $new_color    = $sqlr->quote_smart($_GET['new_color']);
   $new_timezone = $sqlr->quote_smart($_GET['new_timezone']);
 
-  $query = $sqlr->query('UPDATE realmlist SET name=\''.$new_name.'\', address =\''.$new_address.'\' , port =\''.$new_port.'\', icon =\''.$new_icon.'\', color =\''.$new_color.'\', timezone =\''.$new_timezone.'\' WHERE id = '.$id.'');
+  $query = $sqlr->query('UPDATE realmlist SET name=\''.$new_name.'\', address =\''.$new_address.'\' , port =\''.$new_port.'\', icon =\''.$new_icon.'\', realmflags =\''.$new_color.'\', timezone =\''.$new_timezone.'\' WHERE id = '.$id.'');
 
   unset($new_name);
   unset($new_address);
@@ -355,7 +355,7 @@ function add_realm(&$sqlr)
   global $action_permission;
   valid_login($action_permission['insert']);
 
-  if ($sqlr->query('INSERT INTO realmlist (id, name, address, port, icon, color, timezone)
+  if ($sqlr->query('INSERT INTO realmlist (id, name, address, port, icon, realmflags, timezone)
     VALUES (NULL,"MaNGOS", "127.0.0.1", 8085 ,0 ,0 ,1)'))
     redirect('realm.php');
   else
