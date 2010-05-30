@@ -70,24 +70,33 @@ function char_main(&$sqlr, &$sqlc)
 
     if ($user_lvl >= $owner_gmlvl && (($side_v === $side_p) || !$side_v))
     {
-      $result = $sqlc->query('SELECT account, name, race, class, gender, level, zone, map, online, totaltime, 
-									arenaPoints, totalHonorPoints, totalKills, 
-									health, 
-									power1, power2, power3, power4, power5, power6, power7
-								FROM characters 
-								WHERE guid = '.$id.'');
+      $result = $sqlc->query('
+				SELECT c.account, c.name, c.race, c.class, c.level, c.zone, c.map, c.online, c.totaltime, c.gender,
+					c.totalHonorPoints, c.arenaPoints, c.totalKills,
+					cs.blockPct, cs.dodgePct, cs.parryPct, cs.critPct, cs.rangedCritPct, cs.spellCritPct,
+					cs.strength, cs.agility, cs.stamina, cs.intellect, cs.spirit, 
+					c.health, c.power1, c.power2, c.power3, c.power4, c.power5, c.power6, c.power7,
+					cs.maxhealth, cs.maxpower1, cs.maxpower2, cs.maxpower3, cs.maxpower4, cs.maxpower5, cs.maxpower6, cs.maxpower7,
+					cs.resHoly, cs.resFire, cs.resNature, cs.resFrost, cs.resShadow, cs.resArcane, 
+					cs.attackPower, cs.rangedAttackPower, cs.spellPower, cs.armor,
+					c.equipmentCache, 
+					COALESCE(guild_member.guildid,0) AS guildid, COALESCE(guild_member.rank,0) AS rank
+				FROM characters c
+					LEFT JOIN character_stats cs ON c.guid = cs.guid 
+					LEFT JOIN guild_member ON c.guid = guild_member.guid 
+				WHERE c.guid = '.$id);
+
       $char = $sqlc->fetch_assoc($result);
-      $char_data = explode(' ', $sqlc->result($sqlc->query('SELECT maxhealth, maxpower1, maxpower2, maxpower3, maxpower4, maxpower5, maxpower6, maxpower7, strength, agility, stamina, intellect, spirit, armor, resHoly, resFire, resNature, resFrost, resShadow, resArcane, blockPct, dodgePct, ParryPct, critPct, rangedCritPct, spellCritPct, attackPower, rangedAttackPower, spellPower FROM character_stats WHERE guid = '.$id.''), 0));
-//      $char_data = explode(' ',$char['data']);
+      $eq_data = explode(' ',$char['equipmentCache']);
 
       $online = ($char['online']) ? $lang_char['online'] : $lang_char['offline'];
 
-      if($char_data[CHAR_DATA_OFFSET_GUILD_ID])
+      if($char['guildid'])
       {
-        $guild_name = $sqlc->result($sqlc->query('SELECT name FROM guild WHERE guildid ='.$char_data[CHAR_DATA_OFFSET_GUILD_ID].''), 0, 'name');
-        $guild_name = '<a href="guild.php?action=view_guild&amp;realm='.$realmid.'&amp;error=3&amp;id='.$char_data[CHAR_DATA_OFFSET_GUILD_ID].'" >'.$guild_name.'</a>';
-        $mrank = $char_data[CHAR_DATA_OFFSET_GUILD_RANK] + 1;
-        $guild_rank = $sqlc->result($sqlc->query('SELECT rname FROM guild_rank WHERE guildid ='.$char_data[CHAR_DATA_OFFSET_GUILD_ID].' AND rid='.$mrank.''), 0, 'rname');
+        $guild_name = $sqlc->result($sqlc->query('SELECT name FROM guild WHERE guildid ='.$char['guildid'].''), 0, 'name');
+        $guild_name = '<a href="guild.php?action=view_guild&amp;realm='.$realmid.'&amp;error=3&amp;id='.$char['guildid'].'" >'.$guild_name.'</a>';
+        $mrank = $char['rank'];
+        $guild_rank = $sqlc->result($sqlc->query('SELECT rname FROM guild_rank WHERE guildid ='.$char['guildid'].' AND rid='.$mrank.''), 0, 'rname');
       }
       else
       {
@@ -95,38 +104,48 @@ function char_main(&$sqlr, &$sqlc)
         $guild_rank = $lang_global['none'];
       }
 
-      $block       = $char_data[20];
-      $dodge       = $char_data[21];
-      $parry       = $char_data[22];
-      $crit        = $char_data[23];
-      $ranged_crit = $char_data[24];
-      $maxdamage   = $char_data[26];
-      $mindamage   = $char_data[26];
-      $maxrangeddamage = $char_data[27];
-      $minrangeddamage = $char_data[27];
-      $spell_crit = $char_data[25];
-      $spell_damage = $char_data[28];
-      $rage       = round($char_data['power2'] / 10);
-      $expertise  = $char_data[13];
-      $EQU_HEAD      = $char_data[CHAR_DATA_OFFSET_EQU_HEAD];
-      $EQU_NECK      = $char_data[CHAR_DATA_OFFSET_EQU_NECK];
-      $EQU_SHOULDER  = $char_data[CHAR_DATA_OFFSET_EQU_SHOULDER];
-      $EQU_SHIRT     = $char_data[CHAR_DATA_OFFSET_EQU_SHIRT];
-      $EQU_CHEST     = $char_data[CHAR_DATA_OFFSET_EQU_CHEST];
-      $EQU_BELT      = $char_data[CHAR_DATA_OFFSET_EQU_BELT];
-      $EQU_LEGS      = $char_data[CHAR_DATA_OFFSET_EQU_LEGS];
-      $EQU_FEET      = $char_data[CHAR_DATA_OFFSET_EQU_FEET];
-      $EQU_WRIST     = $char_data[CHAR_DATA_OFFSET_EQU_WRIST];
-      $EQU_GLOVES    = $char_data[CHAR_DATA_OFFSET_EQU_GLOVES];
-      $EQU_FINGER1   = $char_data[CHAR_DATA_OFFSET_EQU_FINGER1];
-      $EQU_FINGER2   = $char_data[CHAR_DATA_OFFSET_EQU_FINGER2];
-      $EQU_TRINKET1  = $char_data[CHAR_DATA_OFFSET_EQU_TRINKET1];
-      $EQU_TRINKET2  = $char_data[CHAR_DATA_OFFSET_EQU_TRINKET2];
-      $EQU_BACK      = $char_data[CHAR_DATA_OFFSET_EQU_BACK];
-      $EQU_MAIN_HAND = $char_data[CHAR_DATA_OFFSET_EQU_MAIN_HAND];
-      $EQU_OFF_HAND  = $char_data[CHAR_DATA_OFFSET_EQU_OFF_HAND];
-      $EQU_RANGED    = $char_data[CHAR_DATA_OFFSET_EQU_RANGED];
-      $EQU_TABARD    = $char_data[CHAR_DATA_OFFSET_EQU_TABARD];
+      $block       = round($char['blockPct'],2);
+      $dodge       = round($char['dodgePct'],2);
+      $parry       = round($char['parryPct'],2);
+      $crit        = round($char['critPct'],2);
+      $ranged_crit = round($char['rangedCritPct'],2);
+      $maxdamage   = round($char['attackPower'],2);
+      $mindamage   = round($char['attackPower'],2);
+      $maxrangeddamage = round($char['rangedAttackPower'],2);
+      $minrangeddamage = round($char['rangedAttackPower'],2);
+      $spell_crit = round($char['spellCritPct'],2);
+      $spell_damage = $char['spellPower'];
+      $rage       = round($char['power2'] / 10);
+      $maxrage    = round($char['maxpower2'] / 10);
+      
+      define('CHAR_DATA_OFFSET_MELEE_HIT',0);
+      define('CHAR_DATA_OFFSET_SPELL_HEAL',1);
+      define('CHAR_DATA_OFFSET_SPELL_HIT',2);
+      define('CHAR_DATA_OFFSET_SPELL_HASTE_RATING',3);
+      define('CHAR_DATA_OFFSET_RESILIENCE',4);
+      define('CHAR_DATA_OFFSET_RANGE_HIT',5);
+      $char_data = array(0,0,0,0,0,0);
+      
+      $expertise  = 0;
+      $EQU_HEAD      = $eq_data[0];
+      $EQU_NECK      = $eq_data[2];
+      $EQU_SHOULDER  = $eq_data[4];
+      $EQU_SHIRT     = $eq_data[6];
+      $EQU_CHEST     = $eq_data[8];
+      $EQU_BELT      = $eq_data[10];
+      $EQU_LEGS      = $eq_data[12];
+      $EQU_FEET      = $eq_data[14];
+      $EQU_WRIST     = $eq_data[16];
+      $EQU_GLOVES    = $eq_data[18];
+      $EQU_FINGER1   = $eq_data[20];
+      $EQU_FINGER2   = $eq_data[22];
+      $EQU_TRINKET1  = $eq_data[24];
+      $EQU_TRINKET2  = $eq_data[26];
+      $EQU_BACK      = $eq_data[28];
+      $EQU_MAIN_HAND = $eq_data[30];
+      $EQU_OFF_HAND  = $eq_data[32];
+      $EQU_RANGED    = $eq_data[34];
+      $EQU_TABARD    = $eq_data[36];
 /*
 // reserved incase we want to use back minimanagers' built in tooltip, instead of wowheads'
 // minimanagers' item tooltip needs updating, but it can show enchantments and sockets.
@@ -367,12 +386,12 @@ function char_main(&$sqlr, &$sqlc)
                         '.$lang_item['armor'].':
                       </div>
                       <div class="gradient_pp">
-                        '.$char_data[CHAR_DATA_OFFSET_STR].'<br />
-                        '.$char_data[CHAR_DATA_OFFSET_AGI].'<br />
-                        '.$char_data[CHAR_DATA_OFFSET_STA].'<br />
-                        '.$char_data[CHAR_DATA_OFFSET_INT].'<br />
-                        '.$char_data[CHAR_DATA_OFFSET_SPI].'<br />
-                        '.$char_data[CHAR_DATA_OFFSET_ARMOR].'
+                        '.$char['strength'].'<br />
+                        '.$char['agility'].'<br />
+                        '.$char['stamina'].'<br />
+                        '.$char['intellect'].'<br />
+                        '.$char['spirit'].'<br />
+                        '.$char['armor'].'
                       </div>
                     </td>
                     <td class="half_line" colspan="2" rowspan="3" align="center" width="50%">
@@ -385,12 +404,12 @@ function char_main(&$sqlr, &$sqlc)
                         '.$lang_item['res_shadow'].':
                       </div>
                       <div class="gradient_pp">
-                        '.$char_data[CHAR_DATA_OFFSET_RES_HOLY].'<br />
-                        '.$char_data[CHAR_DATA_OFFSET_RES_ARCANE].'<br />
-                        '.$char_data[CHAR_DATA_OFFSET_RES_FIRE].'<br />
-                        '.$char_data[CHAR_DATA_OFFSET_RES_NATURE].'<br />
-                        '.$char_data[CHAR_DATA_OFFSET_RES_FROST].'<br />
-                        '.$char_data[CHAR_DATA_OFFSET_RES_SHADOW].'
+                        '.$char['resHoly'].'<br />
+                        '.$char['resArcane'].'<br />
+                        '.$char['resFire'].'<br />
+                        '.$char['resNature'].'<br />
+                        '.$char['resFrost'].'<br />
+                        '.$char['resShadow'].'
                       </div>
                     </td>
                     <td width="1%">';
