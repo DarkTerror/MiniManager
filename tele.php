@@ -155,13 +155,13 @@ function browse_tele()
 
   $output .= "
             <tr>
-              <td  colspan=\"7\" class=\"hidden\" align=\"right\" width=\"25%\">";
+              <td  colspan=\"8\" class=\"hidden\" align=\"right\" width=\"25%\">";
   $output .= generate_pagination("tele.php?order_by=$order_by&amp;dir=".(($dir) ? 0 : 1).( $search_value && $search_by ? "&amp;search_by=$search_by&amp;search_value=$search_value" : "" ), $all_record, $itemperpage, $start);
   $output .= "
               </td>
             </tr>
             <tr>
-              <td colspan=\"7\" class=\"hidden\" align=\"right\">{$lang_tele['tot_locations']} : $all_record</td>
+              <td colspan=\"8\" class=\"hidden\" align=\"right\">{$lang_tele['tot_locations']} : $all_record</td>
             </tr>
           </table>
         </center>

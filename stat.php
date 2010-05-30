@@ -53,8 +53,6 @@ function stats($action, &$sqlr, &$sqlc)
 
   $total_chars = $sqlc->result($sqlc->query('SELECT count(*) FROM characters'.( ($action) ? ' WHERE online= 1' : '' ).''), 0);
 
-  if ($total_chars)
-  {
     $output .= '
           <center>
             <div id="tab">
@@ -409,9 +407,6 @@ $allies_pros  = 100 - $horde_pros;
             </div>
             <br />
           </center>';
-  }
-  else
-    error($lang_global['err_no_result']);
 
 }
 
