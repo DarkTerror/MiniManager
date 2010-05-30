@@ -158,9 +158,8 @@ function browse_chars(&$sqlr, &$sqlc)
   else
   {
     $query_1 = $sqlc->query("SELECT count(*) FROM `characters`");
-    $query = $sqlc->query("SELECT characters.guid, characters.name, characters.account, characters.race, characters.class, characters.zone, characters.map, totalHonorPoints AS highest_rank,
-      online,level, gender, logout_time, guild.guildid as gname
-      FROM `characters`, guild_member, guild WHERE characters.guid = guild_member.guid AND guild_member.guildid = guild.guildid GROUP BY characters.guid ORDER BY $order_by $order_dir LIMIT $start, $itemperpage");
+    $query = $sqlc->query("SELECT guid, name, account, race, class, zone, map, totalHonorPoints AS highest_rank,
+      online,level, gender, logout_time FROM `characters` ORDER BY $order_by $order_dir LIMIT $start, $itemperpage");
   }
 
   $all_record = $sqlc->result($query_1,0);
@@ -266,7 +265,7 @@ function browse_chars(&$sqlr, &$sqlc)
     $owner_acc_name = $sqlr->result($result, 0, 'username');
     $lastseen = date('Y-m-d G:i:s', $char[11]);
 
-    $guild_name = $sqlc->fetch_row($sqlc->query('SELECT name FROM guild WHERE guildid = '.$char[12].''));
+    $guild_name = $sqlc->fetch_row($sqlc->query('SELECT G.name FROM characters C, guild_member GM, guild G WHERE C.guid = GM.guid AND GM.guildid = G.guildid AND C.guid='.$char[0].''));
 
     if (($user_lvl >= $owner_gmlvl)||($owner_acc_name == $user_name))
     {
@@ -315,7 +314,7 @@ function browse_chars(&$sqlr, &$sqlc)
 
   $output .= '
               <tr>
-                <td colspan="13" align="right" class="hidden" width="25%">';
+                <td colspan="14" align="right" class="hidden" width="25%">';
   $output .= generate_pagination('char_list.php?order_by='.$order_by.'&amp;dir='.(($dir) ? 0 : 1).( $search_value && $search_by ? '&amp;search_by='.$search_by.'&amp;search_value='.$search_value.'' : '' ), $all_record, $itemperpage, $start);
   $output .= '
                 </td>
@@ -326,7 +325,7 @@ function browse_chars(&$sqlr, &$sqlc)
                   makebutton($lang_char_list['del_selected_chars'], 'javascript:do_submit(\'form1\',0)" type="wrn', 220);
   $output .= '
                 </td>
-                <td colspan="7" align="right" class="hidden">'.$lang_char_list['tot_chars'].' : '.$all_record.'</td>
+                <td colspan="8" align="right" class="hidden">'.$lang_char_list['tot_chars'].' : '.$all_record.'</td>
               </tr>
             </table>
           </form>
