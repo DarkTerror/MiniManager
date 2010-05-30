@@ -114,7 +114,7 @@ function char_mail(&$sqlr, &$sqlc)
       $query = $sqlc->query('SELECT a.id as id, a.messageType as messagetype, a.sender as sender,
         a.subject as subject, a.body as itemtextid, a.has_items as hasitems, a.money as money, a.cod as cod, a.checked as checked,
         b.item_template as itemtemplate
-        FROM mail a INNER JOIN mail_items b ON a.id = b.mail_id where a.receiver = '.$id .' GROUP by a.id LIMIT '.$start.', '.$itemperpage.'');
+        FROM mail a LEFT JOIN mail_items b ON a.id = b.mail_id where a.receiver = '.$id .' GROUP by a.id LIMIT '.$start.', '.$itemperpage.'');
       $total_mail = $sqlc->result($sqlc->query('SELECT count(*) FROM mail WHERE receiver= '.$id .''), 0);
 
 
@@ -141,22 +141,28 @@ function char_mail(&$sqlr, &$sqlc)
 				
       while ($mail = $sqlc->fetch_assoc($query))
       {
+        $g = floor($mail['money']/10000);
+        $mail['money'] -= $g*10000;
+        $s = floor($mail['money']/100);
+        $mail['money'] -= $s*100;
+        $c = $mail['money'];
+        $money = "";
+        if ($mail['money'] > 0)
+            $money = $g."<img src=\"./img/gold.gif\" /> ".$s."<img src=\"./img/silver.gif\" /> ".$c."<img src=\"./img/copper.gif\" /> ";
         $output .= '
                 <tr valign=top>
                   <td>'.get_mail_source($mail['messagetype']).'</td>
                   <td><a href="char.php?id='.$mail['sender'].'">'.get_char_name($mail['sender']).'</a></td>
                   <td>'.$mail['subject'].'</td>
-                  <td>
-                    <a style="padding:2px;" href="'.$item_datasite.$mail['itemtemplate'].'" target="_blank">
+                  <td>';
+        if($mail['hasitems'])
+            $output .= '
+                   <a style="padding:2px;" href="'.$item_datasite.$mail['itemtemplate'].'" target="_blank">
                     <img class="bag_icon" src="'.get_item_icon($mail['itemtemplate'], $sqlm).'" alt="" />
-                    </a>
-                  </td>
-                  <td>'.get_mail_text($mail['itemtextid']).'</td>
-                  <td>
-                    '.substr($mail['money'],  0, -4).'<img src="img/gold.gif" alt="" align="middle" />
-                    '.substr($mail['money'], -4,  2).'<img src="img/silver.gif" alt="" align="middle" />
-                    '.substr($mail['money'], -2).'<img src="img/copper.gif" alt="" align="middle" />
-                  </td>
+                    </a>';
+        $output .= '</td>
+                 <td>'.get_mail_text($mail['id']).'</td>
+                  <td>'.$money.'</td>
                   <td>'.get_check_state($mail['checked']).'</td>
                 </tr>';
       }
