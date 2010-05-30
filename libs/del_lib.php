@@ -34,7 +34,7 @@ function del_char($guid, $realm)
 		$sqlc->query('DELETE 
 						FROM item_text 
 						WHERE id IN
-					(SELECT itemTextId
+					(SELECT body
 						FROM mail 
 						WHERE receiver IN
 					(SELECT guid 
@@ -110,7 +110,7 @@ function del_acc($acc_id)
 					$sqlc->query('DELETE 
 									FROM item_text 
 									WHERE id IN
-								(SELECT itemTextId 
+								(SELECT body 
 									FROM mail 
 									WHERE receiver IN
 								(SELECT guid 
