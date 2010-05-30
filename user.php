@@ -193,9 +193,6 @@ function browse_users(&$sqlr, &$sqlc)
                   <th width="1%"><a href="user.php?order_by=id&amp;start='.$start.( $search_value && $search_by ? '&amp;search_by='.$search_by.'&amp;search_value='.$search_value.'' : '' ).'&amp;dir='.$dir.'"'.($order_by==='id' ? ' class="'.$order_dir.'"' : '').'>'.$lang_user['id'].'</a></th>
                   <th width="1%"><a href="user.php?order_by=username&amp;start='.$start.( $search_value && $search_by ? '&amp;search_by='.$search_by.'&amp;search_value='.$search_value.'' : '' ).'&amp;dir='.$dir.'"'.($order_by==='username' ? ' class="'.$order_dir.'"' : '').'>'.$lang_user['username'].'</a></th>
                   <th width="1%"><a href="user.php?order_by=gmlevel&amp;start='.$start.( $search_value && $search_by ? '&amp;search_by='.$search_by.'&amp;search_value='.$search_value.'' : '' ).'&amp;dir='.$dir.'"'.($order_by==='gmlevel' ? ' class="'.$order_dir.'"' : '').'>'.$lang_user['gm_level'].'</a></th>';
-  if ($expansion_select)
-    $output .='
-                  <th width="1%"><a href="user.php?order_by=expansion&amp;start='.$start.( $search_value && $search_by ? '&amp;search_by='.$search_by.'&amp;search_value='.$search_value.'' : '' ).'&amp;dir='.$dir.'"'.($order_by==='expansion' ? ' class="'.$order_dir.'"' : '').'>EXP</a></th>';
   $output .='
                   <th width="1%"><a href="user.php?order_by=email&amp;start='.$start.( $search_value && $search_by ? '&amp;search_by='.$search_by.'&amp;search_value='.$search_value.'' : '' ).'&amp;dir='.$dir.'"'.($order_by==='email' ? ' class="'.$order_dir.'"' : '').'>'.$lang_user['email'].'</a></th>
                   <th width="1%"><a href="user.php?order_by=joindate&amp;start='.$start.( $search_value && $search_by ? '&amp;search_by='.$search_by.'&amp;search_value='.$search_value.'' : '' ).'&amp;dir='.$dir.'"'.($order_by==='joindate' ? ' class="'.$order_dir.'"' : '').'>'.$lang_user['join_date'].'</a></th>
@@ -232,13 +229,6 @@ function browse_users(&$sqlr, &$sqlc)
                     <a href="user.php?action=edit_user&amp;error=11&amp;id='.$data['id'].'">'.$data['username'].'</a>
                   </td>
                   <td>'.$gm_level_arr[$data['gmlevel']][2].'</td>';
-      if ($expansion_select)
-      {
-        $exp_lvl_arr = id_get_exp_lvl();
-        $output .= '
-                  <td>'.$exp_lvl_arr[$data['expansion']][2].'</td>';
-        unset($exp_lvl_arr);
-      }
       if ($user_lvl >= $action_permission['update']||($user_name === $data['username']))
         $output .= '
                   <td><a href="mailto:'.$data['email'].'">'.substr($data['email'],0,15).'</a></td>';
