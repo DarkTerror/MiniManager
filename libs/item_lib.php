@@ -87,9 +87,9 @@ function get_item_icon($itemid, &$sqlm=0, &$sqlw=0)
     $displayid = $sqlw->result($result, 0);
   else
   {
-    $result = $sqlm->query("SELECT `field_5` FROM `dbc_item` WHERE `entry` = $itemid LIMIT 1");
+    $result = $sqlm->query("SELECT `field_5` FROM `dbc_item` WHERE `id` = $itemid LIMIT 1");
     if ($result)
-      $displayid = $sqlm->result($result, 0);
+      $displayid = $sqlm->result($result, 0, 'field_5');
     else
       $displayid = 0;
   }
@@ -100,7 +100,7 @@ function get_item_icon($itemid, &$sqlm=0, &$sqlw=0)
 
     if($result)
     {
-      $item_uppercase = $sqlm->result($result, 0);
+      $item_uppercase = $sqlm->result($result, 0, 'name');
       $item = strtolower($item_uppercase);
 
       if ($item)
@@ -133,14 +133,14 @@ function get_item_icon($itemid, &$sqlm=0, &$sqlw=0)
 
   if($get_icons_from_web)
   {
-    $xmlfilepath="http://www.wowhead.com/?item=";
+    $xmlfilepath="http://www.wowhead.com/item=";
     $proxy = $proxy_cfg['addr'];
     $port = $proxy_cfg['port'];
 
     if (empty($proxy_cfg['addr']))
     {
       $proxy = "www.wowhead.com";
-      $xmlfilepath = "?item=";
+      $xmlfilepath = "item=";
       $port = 80;
     }
 
@@ -197,7 +197,7 @@ function get_item_icon($itemid, &$sqlm=0, &$sqlw=0)
     if (!$fp)
       return "img/INV/INV_blank_32.gif";
     $iconfilename = strtolower($item);
-    $file = "http://static.wowhead.com/images/icons/medium/$iconfilename.jpg";
+    $file = "http://static.wowhead.com/images/wow/icons/medium/$iconfilename.jpg";
     $out = "GET $file HTTP/1.0\r\nHost: static.wowhead.com\r\n";
     if (!empty($proxy_cfg['user']))
       $out .= "Proxy-Authorization: Basic ". base64_encode ("{$proxy_cfg['user']}:{$proxy_cfg['pass']}")."\r\n";

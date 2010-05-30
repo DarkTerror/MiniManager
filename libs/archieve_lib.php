@@ -105,7 +105,7 @@ function achieve_get_icon($achieveid, &$sqlm)
   $result = $sqlm->query('SELECT field_42 FROM dbc_achievement WHERE id = \''.$achieveid.'\' LIMIT 1');
 
   if ($result)
-    $displayid = $sqlm->result($result, 0);
+    $displayid = $sqlm->result($result, 0, 'field_42');
   else
     $displayid = 0;
 
@@ -115,7 +115,7 @@ function achieve_get_icon($achieveid, &$sqlm)
 
     if($result)
     {
-      $achieve_uppercase = $sqlm->result($result, 0);
+      $achieve_uppercase = $sqlm->result($result, 0, 'name');
 	  $achieve = strtolower($achieve_uppercase);
 
       if ($achieve)
@@ -148,14 +148,14 @@ function achieve_get_icon($achieveid, &$sqlm)
 
   if($get_icons_from_web)
   {
-    $xmlfilepath='http://www.wowhead.com/?achievement=';
+    $xmlfilepath='http://www.wowhead.com/achievement=';
     $proxy = $proxy_cfg['addr'];
     $port = $proxy_cfg['port'];
 
     if (empty($proxy_cfg['addr']))
     {
       $proxy = 'www.wowhead.com';
-      $xmlfilepath = '?achievement=';
+      $xmlfilepath = 'achievement=';
       $port = 80;
     }
 
@@ -214,7 +214,7 @@ function achieve_get_icon($achieveid, &$sqlm)
     else
       return 'img/INV/INV_blank_32.gif';
     $iconfilename = strtolower($achieve);
-    $file = 'http://static.wowhead.com/images/icons/medium/'.$iconfilename.'.jpg';
+    $file = 'http://static.wowhead.com/images/wow/icons/medium/'.$iconfilename.'.jpg';
     $out = "GET $file HTTP/1.0\r\nHost: static.wowhead.com\r\n";
     if (isset($proxy_cfg['user']))
       $out .= "Proxy-Authorization: Basic ". base64_encode ("{$proxy_cfg['user']}:{$proxy_cfg['pass']}")."\r\n";
