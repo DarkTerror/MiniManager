@@ -18,10 +18,10 @@ unset($telnet);
 $doutput = '
 ';
 $show_version['svnrev'] = '';
-if ( is_readable('.svn/entries') )
+if ( is_readable('.git/refs/heads/master') )
 {
-	$file_obj = new SplFileObject('.svn/entries');
-	$file_obj->seek(3);
+	$file_obj = new SplFileObject('.git/refs/heads/master');
+	$file_obj->seek(0);
 	$show_version['svnrev'] = $file_obj->current();
 	unset($file_obj);
 	$doutput .= '
@@ -45,7 +45,7 @@ $output .= '
 <center>';
 if ($l_rev)
 {
-	if ( is_readable('.svn/entries') )
+	if ( is_readable('.git/refs/heads/master') )
 	{
 		$output .='
 		This revision of miniManager is r'.$show_version['svnrev'].'
