@@ -429,6 +429,8 @@ function lang_char()
     'skill_value' => 'Wert',
     'talents' => 'Talente',
     'showhide' => 'show/hide',
+    'extra' => 'Extra',
+    'spells' => 'Spells',
     // ----char_talents.php----
     'talent_rate' => 'Talent Rate',
     'talent_points' => 'Talent Points',
@@ -484,6 +486,8 @@ function lang_char()
     'achievement_title' => 'Achievement Title',    // <---- TODO
     'achievement_points' => 'Punkte',
     'achievement_date' => 'Date',    // <---- TODO
+    // ---- char_mail.php ----
+	'mail' => 'Mail',
   );
   return $lang_char;
 }
