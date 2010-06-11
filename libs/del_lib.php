@@ -4,12 +4,12 @@
 require_once 'tab_lib.php';
 
 //##########################################################################################
-//Delete character
+//Delete character soap & above method
 function del_char($guid, $realm)
 {
 	global 	$characters_db, $realm_db,
 			$user_lvl, $user_id,
-			$tab_del_user_characters, $tab_del_pet;
+			$tab_del_user_characters, $tab_del_pet,$remote_soap,$soap_enable;
 
 	$sqlr = new SQL;
 	$sqlc = new SQL;
@@ -30,48 +30,48 @@ function del_char($guid, $realm)
 		if ($sqlc->result($query, 0, 'online'));
 		else
 		{
-		//Delete pet aura ,spells and cooldowns
-		$sqlc->query('DELETE 
-						FROM item_text 
-						WHERE id IN
-					(SELECT body
-						FROM mail 
-						WHERE receiver IN
-					(SELECT guid 
-						FROM characters 
-						WHERE guid = '.$guid.'))');
-		foreach ($tab_del_pet as $value)
-		$sqlc->query('DELETE 
-						FROM '.$value[0].' 
-						WHERE '.$value[1].' IN
-					(SELECT id 
-						FROM character_pet 
-						WHERE owner IN
-					(SELECT guid 
-						FROM characters 
-						WHERE guid = '.$row['guid'].'))');
-		foreach ($tab_del_user_characters as $value)
-		$sqlc->query('DELETE 
-						FROM '.$value[0].' 
-						WHERE '.$value[1].' = '.$guid.'');
+		  // soap_enable (1 =on, 2=off) -- edit config.dist.php
+			switch ($soap_enable) 
+			{
+				case 1:
+					
+					$name = $sqlc->result($sqlc->query('SELECT name FROM characters WHERE guid = '.$guid.''), 0);
+					$command = "character erase ".$name;
 
-		$chars_in_acc = $sqlr->result($sqlr->query('SELECT numchars 
-													FROM realmcharacters 
-													WHERE acctid ='.$owner_acc_id.' AND realmid = '.$realm.''), 0);
-		if ($chars_in_acc)
-			$chars_in_acc--;
-		else
-			$chars_in_acc = 0;
-		$sqlr->query('UPDATE realmcharacters 
-						SET numchars='.$chars_in_acc.' 
-						WHERE acctid ='.$owner_acc_id.' 
-						AND realmid = '.$realm.'');
-      return true;
+					$client = new SoapClient(NULL,
+					array(
+						"location" => "http://".$remote_soap[0].":".$remote_soap[1]."/",
+						"uri" => "urn:MaNGOS",
+						"style" => SOAP_RPC,
+						"login" => $remote_soap[2],
+						"password" => $remote_soap[3],
+					));
+						try
+							{
+							$result = $client->executeCommand(new SoapParam($command, "command"));
+							$message = "delete";
+	
+							}
+							catch(Exception $e)
+							{
+							$message = "ERROR delete ";
+							}
+							return $message."<br />";	
+									
+				break;
+    
+				case 0:
+					//Delete above method pending repair
+						
+			
+				break;
+				
+			}
+		
 		}
 	}
   return false;
 }
-
 
 //##########################################################################################
 //Delete Account - return array(deletion_flag , number_of_chars_deleted)

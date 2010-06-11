@@ -1,6 +1,8 @@
 <?php
 
-//#############################################################################//// configuration note.
+//#############################################################################
+//
+// configuration note.
 //
 // Do not edit, move or delete this file.
 //
@@ -107,6 +109,13 @@ $server[2]['rev']           = 'rev. ';     // MaNGOS rev. used
 $server[2]['both_factions'] =  true;       // Allow to see opponent faction characters. Affects only players.
 $server[2]['talent_rate']   =  1;          // Talent rate set for this server, needed for talent point calculation
 */
+//#############################################################################
+//---- Soap config ----
+
+$soap_enable = 0;    // 1 enable/ 0 Disable
+
+//$remote_soap = array("Game Server IP", "soap port", "Soap username, must be all CAPS", "User password");
+$remote_soap = array("localhost", "7878", "USER", "password");
 
 //#############################################################################
 //---- Mail configuration ----
