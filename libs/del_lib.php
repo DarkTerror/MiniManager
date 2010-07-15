@@ -79,7 +79,7 @@ function del_acc($acc_id)
 {
 	global 	$characters_db, $realm_db,
 			$user_lvl, $user_id,
-			$tab_del_user_realmd, $tab_del_user_char, $tab_del_user_characters, $tab_del_pet;
+			$tab_del_user_realmd, $tab_del_user_char, $tab_del_user_characters, $tab_del_pet, $remote_soap, $soap_enable;
 
 	$del_char = 0;
 
@@ -98,50 +98,43 @@ function del_acc($acc_id)
 		if ($sqlr->result($query, 0, 'active_realm_id'));
 		else
 		{
-			foreach ($characters_db as $db)
+		
+			switch ($soap_enable) 
 			{
-				$sqlc->connect($db['addr'], $db['user'], $db['pass'], $db['name']);
-				$result = $sqlc->query('SELECT guid 
-										FROM characters 
-										WHERE account = '.$acc_id.'');
-				while ($row = $sqlc->fetch_assoc($result))
-				{
-					//Delete pet aura ,spells and cooldowns
-					$sqlc->query('DELETE 
-									FROM item_text 
-									WHERE id IN
-								(SELECT body 
-									FROM mail 
-									WHERE receiver IN
-								(SELECT guid 
-									FROM characters 
-									WHERE guid = '.$row['guid'].'))');
-					foreach ($tab_del_pet as $value)
-					$sqlc->query('DELETE 
-									FROM '.$value[0].' 
-									WHERE '.$value[1].' IN
-								(SELECT id 
-									FROM character_pet 
-									WHERE owner IN
-								(SELECT guid 
-									FROM characters 
-									WHERE guid = '.$row['guid'].'))');
-					foreach ($tab_del_user_characters as $value)
-					$sqlc->query('DELETE 
-									FROM '.$value[0].' 
-									WHERE '.$value[1].' = '.$row['guid'].'');
-					$del_char++;
-				}
-				$sqlc->query('DELETE 
-							FROM account_data 
-							WHERE account = '.$acc_id.'');
+				case 1:
+					
+					//$name_acc = $sqlc->result($sqlc->query('SELECT username FROM account WHERE id = '.$acc_id.''), 0);
+					//$command = "account delete ".$name;
+					$command = "account delete ".$acc_id;	
+					$client = new SoapClient(NULL,
+					array(
+						"location" => "http://".$remote_soap[0].":".$remote_soap[1]."/",
+						"uri" => "urn:MaNGOS",
+						"style" => SOAP_RPC,
+						"login" => $remote_soap[2],
+						"password" => $remote_soap[3],
+					));
+						try
+							{
+							$result = $client->executeCommand(new SoapParam($command, "command"));
+							$message = "delete";
+	
+							}
+							catch(Exception $e)
+							{
+							$message = "ERROR delete ";
+							}
+							return $message."<br />";	
+									
+				break;
+    
+				case 0:
+					//Delete above method pending repair
+						
+			
+				break;
 			}
-			foreach ($tab_del_user_realmd as $value)
-			$sqlr->query('DELETE 
-							FROM '.$value[0].' 
-							WHERE '.$value[1].' = '.$acc_id.'');
-			if ($sqlr->affected_rows())
-			return array(true, $del_char);
+		
 		}
 	}
 	return array(false, $del_char);

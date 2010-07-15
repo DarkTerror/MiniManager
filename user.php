@@ -405,7 +405,8 @@ function dodel_user()
   {
     if ($check[$i] != "" )
     {
-      list($flag,$del_char) = del_acc($check[$i]);
+	
+	 list($flag,$del_char) = del_acc($check[$i]);
       if ($flag)
       {
         $deleted_acc++;
@@ -423,7 +424,7 @@ function dodel_user()
     $output .= "
           <h1><font class=\"error\">{$lang_user['total']} <font color=blue>$deleted_acc</font> {$lang_user['acc_deleted']}</font><br /></h1>";
     $output .= "
-          <h1><font class=\"error\">{$lang_user['total']} <font color=blue>$deleted_chars</font> {$lang_user['char_deleted']}</font></h1>";
+          <h1><font class=\"error\">{$lang_user['char_deleted']}</font></h1>";
   }
   $output .= "
           <br /><br />";
